@@ -84,27 +84,21 @@ After running these two script, we would get all results like the following stru
 ├── 06_ratio
 │   ├── H3K9me3_ratio_peaks.bed
 │   ├── H3K9me3_vs_IgG_log2ratio.bw
-├── logs
-│   ├── 01_clean
-│   │   ├── H3K9me3-1_cutadapt.log
-│   │   └── IgG_cutadapt.log
-│   ├── 02_bam
-│   │   ├── H3K9me3-1_bt2_hg38.log
-│   │   ├── H3K9me3-1_bt2_hg38_sort.log
-│   │   ├── IgG_bt2_hg38.log
-│   │   └── IgG_bt2_hg38_sort.log
-│   ├── 03_bw
-│   │   ├── H3K9me3-1_bw.log
-│   │   ├── H3K9me3-1_bw_rpgc_bin500.log
-│   │   ├── H3K9me3-1_bw_rpgc.log
-│   │   ├── IgG_bw_ct.log
-│   │   ├── IgG_bw.log
-│   │   └── IgG_bw_rpgc_bin500.log
-│   ├── 04_peak
-│   │   ├── H3K9me3-1_peaks.log
-│   │   └── IgG_peaks.log
-│   └── 05_peak_against_igg
-│       └── H3K9me3-1_peaks.log
-├── README.md
-└── single_command.sh
+└──logs
+    ├── 01_clean
+    │   ├── H3K9me3-1_cutadapt.log
+    │   └── IgG_cutadapt.log
+    ├── 02_bam
+    │   ├── H3K9me3-1_bt2_hg38.log
+    │   ├── H3K9me3-1_bt2_hg38_sort.log
+    │   ├── IgG_bt2_hg38.log
+    │   └── IgG_bt2_hg38_sort.log
+    ├── 03_bw
+    │   ├── H3K9me3-1_bw_rpgc_bin500.log
+    │   └── IgG_bw_rpgc_bin500.log
+    ├── 04_peak
+    │   ├── H3K9me3-1_peaks.log
+    │   └── IgG_peaks.log
+    └── 05_peak_against_igg
+        └── H3K9me3-1_peaks.log
 ```
