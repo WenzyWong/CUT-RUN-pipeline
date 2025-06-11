@@ -1,0 +1,9 @@
+01_clean/
+02_bam/
+03_bw/
+04_peak/
+05_peak_against_igg/
+06_ratio/
+logs/
+Rawdata/
+.snakemake/
