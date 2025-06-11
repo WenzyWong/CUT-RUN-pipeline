@@ -5,7 +5,6 @@
 # Updated: 2025-06-11
 # 
 ######################################################
-# Run this script by: snakemake -s cutrun_preexp.py -p -j 1 --rerun-incomplete
 
 SAMPLE = {"H3K9me3-1", "IgG"}
 INDEX_BT2 = "/data/yzwang/reference/hg38/hg38"
@@ -61,16 +60,6 @@ rule bam_file_sort:
         samtools sort -O BAM -o {output[0]} -T {output[0]}.temp -@ {THREADS} {input} 2>> {log}
         samtools index -@ {THREADS} {output[0]} {output[1]} 2>> {log}
         """
-
-rule bam_to_bw:
-    input:
-        "02_bam/{smpl}/{smpl}_bt2_hg38_sort.bam"
-    output:
-        "03_bw/{smpl}/{smpl}_bt2_hg38.bw"
-    log:
-        "logs/03_bw/{smpl}_bw.log"
-    shell:
-        "bamCoverage --bam {input} -o {output} -bs 10 --normalizeUsing CPM > {log} 2>&1"
 
 rule bam_to_bw_rpgc:
     input:
