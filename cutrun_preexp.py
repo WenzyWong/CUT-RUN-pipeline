@@ -16,7 +16,6 @@ rule all:
         expand("01_clean/{smpl}/{smpl}_R2.fq.gz", smpl = SAMPLE),
         expand("02_bam/{smpl}/{smpl}_bt2_hg38_sort.bam", smpl = SAMPLE),
         expand("02_bam/{smpl}/{smpl}_bt2_hg38_sort.bam.bai", smpl = SAMPLE),
-        expand("03_bw/{smpl}/{smpl}_bt2_hg38.bw", smpl = SAMPLE),
         expand("03_bw/{smpl}/{smpl}_bt2_hg38_rpgc_bin500.bw", smpl = SAMPLE),
         expand("04_peak/{smpl}/{smpl}_peaks.broadPeak", smpl = SAMPLE)
 
