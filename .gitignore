@@ -7,3 +7,10 @@
 logs/
 Rawdata/
 .snakemake/
+Rawdata-clones/
+00_spk_ecoli_bt2/
+01_spk_clean/
+02_spk_bam/
+02_spk_bam_spikein/
+03_spk_bw_normalized/
+04_spk_peak/
