@@ -22,8 +22,7 @@ rule all:
         expand("02_spk_bam/{smpl}/{smpl}_bt2_hg38_sort.bam.bai", smpl = SAMPLE),
         expand("02_spk_bam_spikein/{smpl}/{smpl}_bt2_spikein_sort.bam", smpl = SAMPLE),
         expand("03_spk_bw_normalized/{smpl}/{smpl}_normalized_bin500.bw", smpl = SAMPLE),
-        expand("04_spk_bedgraph/{smpl}/{smpl}_normalized_bin500.bedGraph", smpl = SAMPLE),
-        expand("05_spk_peak/{smpl}/{smpl}_peaks.broadPeak", smpl = SAMPLE)
+        expand("04_spk_peak/{smpl}/{smpl}_peaks.broadPeak", smpl = SAMPLE)
 
 rule trim:
     input:
@@ -84,7 +83,7 @@ rule bam_file_sort_spikein:
     output:
         "02_spk_bam_spikein/{smpl}/{smpl}_bt2_spikein_sort.bam"
     log:
-        "logs/02_bam_spikein/{smpl}_bt2_spikein_sort.log"
+        "logs/02_spk_bam_spikein/{smpl}_bt2_spikein_sort.log"
     shell:
         "samtools sort -O BAM -o {output} -T {output}.temp -@ {THREADS} {input} > {log} 2>&1"
 
@@ -122,25 +121,25 @@ rule spikein_normalize_bin500:
             --effectiveGenomeSize 2913022398 > {log} 2>&1
         """
 
-rule bw2bedgraph:
-    input:
-        "03_spk_bw_normalized/{smpl}/{smpl}_normalized_bin500.bw"
-    output:
-        "04_spk_bedgraph/{smpl}/{smpl}_normalized_bin500.bedGraph"
-    log:
-        "logs/04_spk_bedgraph/{smpl}_normalized_bin500.log"
-    shell:
-        "bigWigToBedGraph {input} {output} > {log} 2>&1"
-
 rule call_peak:
     input:
-        "04_spk_bedgraph/{smpl}/{smpl}_normalized_bin500.bedGraph"
+        "02_spk_bam/{smpl}/{smpl}_bt2_hg38_sort.bam"
     output:
-        "05_spk_peak/{smpl}/{smpl}_peaks.broadPeak"
+        "04_spk_peak/{smpl}/{smpl}_peaks.broadPeak"
     params:
         "{smpl}",
-        "05_spk_peak/{smpl}"
+        "04_spk_peak/{smpl}"
     log:
-        "logs/05_spk_peak/{smpl}_peaks.log"
+        "logs/04_spk_peak/{smpl}_peaks.log"
     shell:
         "macs3 callpeak -q 0.1 -t {input} -g hs -n {params[0]} --broad --broad-cutoff 0.1 --outdir {params[1]} > {log} 2>&1"
+
+rule adjust_peak:
+    input:
+        "04_spk_peak/{smpl}/{smpl}_peaks.broadPeak"
+    output:
+        "04_spk_peak/{smpl}/{smpl}_peaks_adj.broadPeak"
+    shell:
+        r"""
+        awk -v cf=$correction_factor 'BEGIN{OFS="\t"} {if(NR>1) $5=$5*cf; print}' {input} > {output}
+        """
