@@ -13,4 +13,6 @@ Rawdata-clones/
 02_spk_bam/
 02_spk_bam_spikein/
 03_spk_bw_normalized/
+04_spk_bedgraph/
 04_spk_peak/
+05_spk_peak/
