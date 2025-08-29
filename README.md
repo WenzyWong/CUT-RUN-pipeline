@@ -17,12 +17,8 @@ where `${JOB_NUM}` is the number of jobs.
 There are some tips that should keep in mind later:
 
 > [!TIP]
-> The sequences in `rule trim` are based on the experimental kit. Therefore, we shall change it according to the kit manual.
-
-> [!TIP]
-> In `rule bt2_mapping`, using `--very-sensitive`, `--no-mixed`, and `--no-discordant` parameters is due to protocol from [CUT&Tag Data Processing and Analysis Tutorial](https://www.protocols.io/view/cut-amp-tag-data-processing-and-analysis-tutorial-e6nvw93x7gmk/v1?step=9). These parameters would remove background noise as much as possible, thus might generating relatively lower peaks than default `bowtie2` parameters.
-
-> [!TIP]
+> * The sequences in `rule trim` are based on the experimental kit. Therefore, we shall change it according to the kit manual.
+> * In `rule bt2_mapping`, using `--very-sensitive`, `--no-mixed`, and `--no-discordant` parameters is due to protocol from [CUT&Tag Data Processing and Analysis Tutorial](https://www.protocols.io/view/cut-amp-tag-data-processing-and-analysis-tutorial-e6nvw93x7gmk/v1?step=9). These parameters would remove background noise as much as possible, thus might generating relatively lower peaks than default `bowtie2` parameters.
 > * In `rule bam_to_bw_rpgc`, choosing RPGC as the normalization method used in `bamCoverage` is because:
 > * * RPGC normalizes data to a 1x genome coverage, which is important for comparing signal intensities between different samples, especially when sequencing depths vary.
 > * * CUT&RUN generates relatively low background noise. It is primarily enriched at true binding sites.
