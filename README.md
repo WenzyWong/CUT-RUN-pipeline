@@ -24,8 +24,8 @@ There are some tips that should keep in mind later:
 
 > [!TIP]
 > In `rule bam_to_bw_rpgc`, choosing RPGC as the normalization method used in `bamCoverage` is because:
-> RPGC normalizes data to a 1x genome coverage, which is important for comparing signal intensities between different samples, especially when sequencing depths vary.
-> CUT&RUN generates relatively low background noise. It is primarily enriched at true binding sites.
+> * RPGC normalizes data to a 1x genome coverage, which is important for comparing signal intensities between different samples, especially when sequencing depths vary.
+> * CUT&RUN generates relatively low background noise. It is primarily enriched at true binding sites.
 
 > [!TIP]
 > In `rule bam_to_bw_rpgc`, setting `--binSize` to 500 is due to relatively large domians of histone modifications. Suitable `binSize` can range from 200 to 1000, according to the researchers' interests.
