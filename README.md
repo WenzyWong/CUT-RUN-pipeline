@@ -108,7 +108,7 @@ After running these two script, we would get all results like the following stru
 
 ## For experiment with spike-in
 
-To be noted: The pre experiment data used in this pipeline didn't contain spike-in and replicates.
+To be noted: Spike-in and replicates are included in this pipeline.
 
 Run `cutrun_spikein.py` using snakemake by
 
@@ -118,4 +118,4 @@ snakemake -s cutrun_spikein.py -p -j ${JOB_NUM} --rerun-incomplete
 
 where `${JOB_NUM}` is the number of jobs.
 
-Tips can be found in the [previous section](#for-pre-experiment)
+Tips can be found in the [previous section](#for-pre-experiment).
