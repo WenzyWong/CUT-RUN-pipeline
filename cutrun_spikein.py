@@ -22,7 +22,8 @@ rule all:
         expand("02_spk_bam/{smpl}/{smpl}_bt2_hg38_sort.bam.bai", smpl = SAMPLE),
         expand("02_spk_bam_spikein/{smpl}/{smpl}_bt2_spikein_sort.bam", smpl = SAMPLE),
         expand("03_spk_bw_normalized/{smpl}/{smpl}_normalized_bin500.bw", smpl = SAMPLE),
-        expand("04_spk_peak/{smpl}/{smpl}_peaks.broadPeak", smpl = SAMPLE)
+        expand("04_spk_peak/{smpl}/{smpl}_peaks.broadPeak", smpl = SAMPLE),
+        expand("04_spk_peak/{smpl}/{smpl}_peaks_adj.broadPeak", smpl = SAMPLE)
 
 rule trim:
     input:
@@ -136,10 +137,17 @@ rule call_peak:
 
 rule adjust_peak:
     input:
-        "04_spk_peak/{smpl}/{smpl}_peaks.broadPeak"
+        peak = "04_spk_peak/{smpl}/{smpl}_peaks.broadPeak",
+        spikein_bam = "02_spk_bam_spikein/{smpl}/{smpl}_bt2_spikein_sort.bam"
     output:
         "04_spk_peak/{smpl}/{smpl}_peaks_adj.broadPeak"
     shell:
         r"""
-        awk -v cf=$correction_factor 'BEGIN{OFS="\t"} {if(NR>1) $5=$5*cf; print}' {input} > {output}
+        spikein_reads=$(samtools view -c -F 4 {input.spikein_bam})
+
+        if [ "$spikein_reads" -gt 0 ]; then
+            awk -v reads="$spikein_reads" 'BEGIN{{OFS="\t"; cf=20000/reads}} {{if(NR>1) $5=$5*cf; print}}' {input.peak} > {output}
+        else
+            cp {input.peak} {output}
+        fi
         """
