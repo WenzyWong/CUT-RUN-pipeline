@@ -1,9 +1,9 @@
 ######################################################
 # CUT&RUN analysis for experiment with spike-in
-# 
+#
 # Yunzhe Wang, yunzhewang24@m.fudan.edu.cn
 # Updated: 2025-08-28
-# 
+#
 ######################################################
 import glob
 import os
@@ -108,7 +108,7 @@ rule spikein_normalize_bin500:
         # paired-end: frag = reads / 2
         # scaling factor = 10000 / fragments = 10000 / (reads/2) = 20000 / reads
         if [ "$spikein_reads" -gt 0 ]; then
-                scaling_factor=$(awk -v r="$spikein_reads" 'BEGIN{{printf "%.8f", 20000/r}}')
+            scaling_factor=$(awk -v r="$spikein_reads" 'BEGIN{{printf "%.8f", 20000/r}}')
         else
             scaling_factor=1
         fi
@@ -119,7 +119,7 @@ rule spikein_normalize_bin500:
         bamCoverage --bam {input.primary_bam} -o {output} \
             --scaleFactor $scaling_factor \
             --binSize 500 --extendReads --normalizeUsing RPGC \
-            --effectiveGenomeSize 2913022398 > {log} 2>&1
+            --effectiveGenomeSize 2913022398 >> {log} 2>&1
         """
 
 rule call_peak:
