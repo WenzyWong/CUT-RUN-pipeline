@@ -15,4 +15,5 @@ Rawdata-clones/
 03_spk_bw_normalized/
 04_spk_bedgraph/
 04_spk_peak/
-05_spk_peak/
+05_spk_bw_against_igg/
+06_spk_peak_against_igg/

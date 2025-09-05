@@ -2,7 +2,8 @@
 # CUT&RUN analysis for experiment with spike-in
 #
 # Yunzhe Wang, yunzhewang24@m.fudan.edu.cn
-# Updated: 2025-08-28
+# Create: 2025-08-28
+# Update: 2025-09-05
 #
 ######################################################
 import glob
@@ -14,6 +15,12 @@ INDEX_BT2 = "/data/yzwang/reference/hg38/hg38"
 SPIKEIN_BT2 = "/data/yzwang/cowork/zxliu/cutrun/00_spk_ecoli_bt2/ecoli"
 THREADS = 64
 
+ko_dirs = glob.glob("Rawdata-clones/Panc-1-CUTRUN-ko*")
+KO = [os.path.basename(d).replace("Panc-1-CUTRUN-", "") for d in ko_dirs]
+
+wt_dirs = glob.glob("Rawdata-clones/Panc-1-CUTRUN-ko*")
+KO = [os.path.basename(d).replace("Panc-1-CUTRUN-", "") for d in ko_dirs]
+
 rule all:
     input:
         expand("01_spk_clean/{smpl}/{smpl}_R1.fq.gz", smpl = SAMPLE),
@@ -23,7 +30,9 @@ rule all:
         expand("02_spk_bam_spikein/{smpl}/{smpl}_bt2_spikein_sort.bam", smpl = SAMPLE),
         expand("03_spk_bw_normalized/{smpl}/{smpl}_normalized_bin500.bw", smpl = SAMPLE),
         expand("04_spk_peak/{smpl}/{smpl}_peaks.broadPeak", smpl = SAMPLE),
-        expand("04_spk_peak/{smpl}/{smpl}_peaks_adj.broadPeak", smpl = SAMPLE)
+        expand("04_spk_peak/{smpl}/{smpl}_peaks_adj.broadPeak", smpl = SAMPLE),
+        expand("05_spk_bw_against_igg/{smpl}/{smpl}_peaks_rmigg.broadPeak", smpl = SAMPLE),
+        expand("06_spk_peak_against_igg/{smpl}/{smpl}_peaks_rmigg.broadPeak", smpl = SAMPLE)
 
 rule trim:
     input:
@@ -151,3 +160,59 @@ rule adjust_peak:
             cp {input.peak} {output}
         fi
         """
+
+rule bw_com_igg:
+    input:
+        bw = "03_spk_bw_normalized/{smpl}/{smpl}_normalized_bin500.bw",
+        igg_wt_k9 = "03_spk_bw_normalized/wt-IgG/wt-IgG_normalized_bin500.bw",
+        igg_wt_ac = "03_spk_bw_normalized/wt-IgG-ac/wt-IgG-ac_normalized_bin500.bw",
+        igg_ko_k9 = "03_spk_bw_normalized/ko11-IgG/ko11-IgG_normalized_bin500.bw",
+        igg_ko_ac = "03_spk_bw_normalized/ko-11-IgGac/ko-11-IgGac_normalized_bin500.bw"
+    output:
+        "05_spk_bw_against_igg/{smpl}/{smpl}_peaks_rmigg.broadPeak"
+    log:
+        "logs/05_spk_bw_against_igg/{smpl}_peaks_rmigg.log"
+    run:
+        smpl = wildcards.smpl.lower()
+        
+        if 'wt' in smpl and 'k9' in smpl:
+            igg_file = input.igg_wt_k9
+        elif 'wt' in smpl and 'ac' in smpl:
+            igg_file = input.igg_wt_ac
+        elif 'ko' in smpl and 'k9' in smpl:
+            igg_file = input.igg_ko_k9
+        elif 'ko' in smpl and 'ac' in smpl:
+            igg_file = input.igg_ko_ac
+        else:
+            raise ValueError(f"Cannot determine appropriate IgG control for sample {wildcards.smpl}")
+        
+        shell(f"bigwigCompare -b1 {input.bw} -b2 {igg_file} --operation log2 -o {output} 2>> {log}")
+
+rule peak_comp_igg:
+    input:
+        peak = "04_spk_peak/{smpl}/{smpl}_peaks_adj.broadPeak",
+        igg_wt_k9 = "04_spk_peak/wt-IgG/wt-IgG_peaks_adj.broadPeak",
+        igg_wt_ac = "04_spk_peak/wt-IgG-ac/wt-IgG-ac_peaks_adj.broadPeak",
+        igg_ko_k9 = "04_spk_peak/ko11-IgG/ko11-IgG_peaks_adj.broadPeak",
+        igg_ko_ac = "04_spk_peak/ko-11-IgGac/ko-11-IgGac_peaks_adj.broadPeak"
+    output:
+        "06_spk_peak_against_igg/{smpl}/{smpl}_peaks_rmigg.broadPeak"
+    log:
+        "logs/06_spk_peak_against_igg/{smpl}_peaks_rmigg.log"
+    run:
+        smpl = wildcards.smpl.lower()
+        
+        if 'wt' in smpl and 'k9' in smpl:
+            igg_file = input.igg_wt_k9
+        elif 'wt' in smpl and 'ac' in smpl:
+            igg_file = input.igg_wt_ac
+        elif 'ko' in smpl and 'k9' in smpl:
+            igg_file = input.igg_ko_k9
+        elif 'ko' in smpl and 'ac' in smpl:
+            igg_file = input.igg_ko_ac
+        else:
+            raise ValueError(f"Cannot determine appropriate IgG control for sample {wildcards.smpl}")
+        
+        shell(f"bedtools intersect -a {input.peak} -b {igg_file} -f 0.5 -v > {output} 2>> {log}")
+
+        
