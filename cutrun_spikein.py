@@ -31,7 +31,7 @@ rule all:
         expand("03_spk_bw_normalized/{smpl}/{smpl}_normalized_bin500.bw", smpl = SAMPLE),
         expand("04_spk_peak/{smpl}/{smpl}_peaks.broadPeak", smpl = SAMPLE),
         expand("04_spk_peak/{smpl}/{smpl}_peaks_adj.broadPeak", smpl = SAMPLE),
-        expand("05_spk_bw_against_igg/{smpl}/{smpl}_peaks_rmigg.broadPeak", smpl = SAMPLE),
+        expand("05_spk_bw_against_igg/{smpl}/{smpl}_peaks_rmigg.bw", smpl = SAMPLE),
         expand("06_spk_peak_against_igg/{smpl}/{smpl}_peaks_rmigg.broadPeak", smpl = SAMPLE)
 
 rule trim:
@@ -169,24 +169,28 @@ rule bw_com_igg:
         igg_ko_k9 = "03_spk_bw_normalized/ko11-IgG/ko11-IgG_normalized_bin500.bw",
         igg_ko_ac = "03_spk_bw_normalized/ko-11-IgGac/ko-11-IgGac_normalized_bin500.bw"
     output:
-        "05_spk_bw_against_igg/{smpl}/{smpl}_peaks_rmigg.broadPeak"
+        "05_spk_bw_against_igg/{smpl}/{smpl}_peaks_rmigg.bw"
     log:
         "logs/05_spk_bw_against_igg/{smpl}_peaks_rmigg.log"
     run:
         smpl = wildcards.smpl.lower()
         
-        if 'wt' in smpl and 'k9' in smpl:
-            igg_file = input.igg_wt_k9
-        elif 'wt' in smpl and 'ac' in smpl:
-            igg_file = input.igg_wt_ac
-        elif 'ko' in smpl and 'k9' in smpl:
-            igg_file = input.igg_ko_k9
-        elif 'ko' in smpl and 'ac' in smpl:
-            igg_file = input.igg_ko_ac
+        if 'igg' in smpl:
+            shell(f"touch {output} 2>> {log}")
+            shell(f"echo 'Skipping IgG sample: {wildcards.smpl}' >> {log}")
         else:
-            raise ValueError(f"Cannot determine appropriate IgG control for sample {wildcards.smpl}")
-        
-        shell(f"bigwigCompare -b1 {input.bw} -b2 {igg_file} --operation log2 -o {output} 2>> {log}")
+            if 'wt' in smpl and 'k9' in smpl:
+                igg_file = input.igg_wt_k9
+            elif 'wt' in smpl and 'ac' in smpl:
+                igg_file = input.igg_wt_ac
+            elif 'ko' in smpl and 'k9' in smpl:
+                igg_file = input.igg_ko_k9
+            elif 'ko' in smpl and 'ac' in smpl:
+                igg_file = input.igg_ko_ac
+            else:
+                raise ValueError(f"Cannot determine appropriate IgG control for sample {wildcards.smpl}")
+            
+            shell(f"bigwigCompare -b1 {input.bw} -b2 {igg_file} --operation log2 -o {output} 2>> {log}")
 
 rule peak_comp_igg:
     input:
@@ -202,17 +206,21 @@ rule peak_comp_igg:
     run:
         smpl = wildcards.smpl.lower()
         
-        if 'wt' in smpl and 'k9' in smpl:
-            igg_file = input.igg_wt_k9
-        elif 'wt' in smpl and 'ac' in smpl:
-            igg_file = input.igg_wt_ac
-        elif 'ko' in smpl and 'k9' in smpl:
-            igg_file = input.igg_ko_k9
-        elif 'ko' in smpl and 'ac' in smpl:
-            igg_file = input.igg_ko_ac
+        if 'igg' in smpl:
+            shell(f"touch {output} 2>> {log}")
+            shell(f"echo 'Skipping IgG sample: {wildcards.smpl}' >> {log}")
         else:
-            raise ValueError(f"Cannot determine appropriate IgG control for sample {wildcards.smpl}")
-        
-        shell(f"bedtools intersect -a {input.peak} -b {igg_file} -f 0.5 -v > {output} 2>> {log}")
+            if 'wt' in smpl and 'k9' in smpl:
+                igg_file = input.igg_wt_k9
+            elif 'wt' in smpl and 'ac' in smpl:
+                igg_file = input.igg_wt_ac
+            elif 'ko' in smpl and 'k9' in smpl:
+                igg_file = input.igg_ko_k9
+            elif 'ko' in smpl and 'ac' in smpl:
+                igg_file = input.igg_ko_ac
+            else:
+                raise ValueError(f"Cannot determine appropriate IgG control for sample {wildcards.smpl}")
+            
+            shell(f"bedtools intersect -a {input.peak} -b {igg_file} -f 0.5 -v > {output} 2>> {log}")
 
         
